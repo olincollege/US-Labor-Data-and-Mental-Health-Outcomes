@@ -18,22 +18,19 @@ def make_state_dict(state_dict_url):
         state_dict: dict
             dictionary that maps states to their 2 digit numbers
     """
-    states_translation = requests.get(state_dict_url)
-    bytes_string = states_translation.content
-    raw_string = bytes_string.decode()
-    state_idx_list = [string.strip("\r") for string in (raw_string.split("\n")[1:])]
-    state_dict = {}
-    for item in state_idx_list:
-        separated = item.split("\t")
-        if len(separated) == 2:
-            state_dict[separated[1]] = separated[0]
-    return state_dict
+    states_string = ((requests.get(state_dict_url)).content).decode()
+    state_id_list = [string.strip("\r") for string in (states_string.split("\n")[1:])]
+    state_id_dict = {}
+    for item in state_id_list:
+        if item.count("\t") == 1:
+            state_id_dict[item.split("\t")[1]] = item.split("\t")[0]
+    return state_id_dict
 
 
 state_dict = make_state_dict("https://download.bls.gov/pub/time.series/sm/sm.state")
 
 
-def make_all_state_ids(state_dict, sample_series_id):
+def create_all_state_ids(state_idx_dict, sample_series_id):
     """
     creates a dictionary that maps state names to series IDs
 
@@ -50,23 +47,23 @@ def make_all_state_ids(state_dict, sample_series_id):
     """
     for idx, character in enumerate(sample_series_id):
         if character.isdigit():
-            where_is_state_int = int(idx)
+            state_int_index = int(idx)
             break
     series_ids_dict = {}
     for key in state_dict:
         this_state_series = (
-            sample_series_id[0:where_is_state_int]
-            + str(state_dict[key])
-            + sample_series_id[where_is_state_int + 2 :]
+            sample_series_id[0:state_int_index]
+            + str(state_idx_dict[key])
+            + sample_series_id[state_int_index + 2 :]
         )
         series_ids_dict[key] = this_state_series
     return series_ids_dict
 
 
-series_ids_dict = make_all_state_ids(state_dict, "SMU19197802023800001")
+series_ids_dict = create_all_state_ids(state_dict, "SMU19197802023800001")
 
 
-def get_series_json(series_ids_dict, timeframe, api_key):
+def get_series_json(series_ids_dict, start_year, end_year, api_key):
     """
     call BLS API with series ids and return data in specified timeframe
 
@@ -138,17 +135,16 @@ def get_series_json(series_ids_dict, timeframe, api_key):
         "Wisconsin",
         "Wyoming",
     ]
-    begin_yr = str(timeframe[0])
-    end_yr = str(timeframe[1])
+
     for state_string in state_strings_list:
         active_series_list.append(series_ids_dict[state_string])
-    
+
     headers = {"Content-type": "application/json"}
     data = json.dumps(
         {
             "seriesid": active_series_list,
-            "startyear": begin_yr,
-            "endyear": end_yr,
+            "startyear": str(start_year),
+            "endyear": str(end_year),
             "registrationkey": api_key,
         }
     )
@@ -159,7 +155,7 @@ def get_series_json(series_ids_dict, timeframe, api_key):
     print(json_data)
 
 
-get_series_json(series_ids_dict, [2000, 2010], BLS_key)
+# get_series_json(series_ids_dict, [2000, 2010], BLS_key)
 
 
 def json_to_df(series_json):
@@ -187,6 +183,3 @@ def df_to_csv(series_df):
     returns:
         none (creates a csv file)
     """
-
-
-"state_code\tstate_name\r\n00\tAll States\r\n01\tAlabama\r\n02\tAlaska\r\n04\tArizona\r\n05\tArkansas\r\n06\tCalifornia\r\n08\tColorado\r\n09\tConnecticut\r\n10\tDelaware\r\n11\tDistrict of Columbia\r\n12\tFlorida\r\n13\tGeorgia\r\n15\tHawaii\r\n16\tIdaho\r\n17\tIllinois\r\n18\tIndiana\r\n19\tIowa\r\n20\tKansas\r\n21\tKentucky\r\n22\tLouisiana\r\n23\tMaine\r\n24\tMaryland\r\n25\tMassachusetts\r\n26\tMichigan\r\n27\tMinnesota\r\n28\tMississippi\r\n29\tMissouri\r\n30\tMontana\r\n31\tNebraska\r\n32\tNevada\r\n33\tNew Hampshire\r\n34\tNew Jersey\r\n35\tNew Mexico\r\n36\tNew York\r\n37\tNorth Carolina\r\n38\tNorth Dakota\r\n39\tOhio\r\n40\tOklahoma\r\n41\tOregon\r\n42\tPennsylvania\r\n44\tRhode Island\r\n45\tSouth Carolina\r\n46\tSouth Dakota\r\n47\tTennessee\r\n48\tTexas\r\n49\tUtah\r\n50\tVermont\r\n51\tVirginia\r\n53\tWashington\r\n54\tWest Virginia\r\n55\tWisconsin\r\n56\tWyoming\r\n72\tPuerto Rico\r\n78\tVirgin Islands\r\n99\tAll Metropolitan Statistical Areas\r\n"
