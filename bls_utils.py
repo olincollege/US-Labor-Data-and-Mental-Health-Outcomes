@@ -1,5 +1,7 @@
 import requests
-from csv import DictReader
+from csv import reader as csv_reader
+
+# from csv import DictReader
 from keys import BLS_key
 import json
 import pandas as pd
@@ -77,64 +79,14 @@ def get_series_json(series_ids_dict, start_year, end_year, api_key):
             api key to access BLS database
 
     returns:
-        series_json: dict
+        series_dict: dict
             dictionary with nested dictionaries and lists. includes all
             data values for all timeframes and series called
     """
 
     active_series_list = []
-    state_strings_list = [
-        "Alabama",
-        "Alaska",
-        "Arizona",
-        "Arkansas",
-        "California",
-        "Colorado",
-        "Connecticut",
-        "Delaware",
-        "Florida",
-        "Georgia",
-        "Hawaii",
-        "Idaho",
-        "Illinois",
-        "Indiana",
-        "Iowa",
-        "Kansas",
-        "Kentucky",
-        "Louisiana",
-        "Maine",
-        "Maryland",
-        "Massachusetts",
-        "Michigan",
-        "Minnesota",
-        "Mississippi",
-        "Missouri",
-        "Montana",
-        "Nebraska",
-        "Nevada",
-        "New Hampshire",
-        "New Jersey",
-        "New Mexico",
-        "New York",
-        "North Carolina",
-        "North Dakota",
-        "Ohio",
-        "Oklahoma",
-        "Oregon",
-        "Pennsylvania",
-        "Rhode Island",
-        "South Carolina",
-        "South Dakota",
-        "Tennessee",
-        "Texas",
-        "Utah",
-        "Vermont",
-        "Virginia",
-        "Washington",
-        "West Virginia",
-        "Wisconsin",
-        "Wyoming",
-    ]
+    with open("states.csv", "r") as states_file:
+        state_strings_list = list(csv_reader(states_file, delimiter=","))[0]
 
     for state_string in state_strings_list:
         active_series_list.append(series_ids_dict[state_string])
@@ -148,28 +100,32 @@ def get_series_json(series_ids_dict, start_year, end_year, api_key):
             "registrationkey": api_key,
         }
     )
-    p = requests.post(
+    json_data = requests.post(
         "https://api.bls.gov/publicAPI/v2/timeseries/data/", data=data, headers=headers
     )
-    json_data = json.loads(p.text)
-    print(json_data)
+    return json_data.json()
 
 
-# get_series_json(series_ids_dict, [2000, 2010], BLS_key)
+dict_data = get_series_json(series_ids_dict, 2000, 2010, BLS_key)
 
 
-def json_to_df(series_json):
+def dict_to_df(series_dict):
     """
-    creates a df object from series_json with each state as a column of values
+    creates a df object from series_dict with each state as a column of values
 
     inputs:
-        series_json: dict
-            json object which contains series values for all timeframes
+        series_dict: dict
+            dict object which contains series values for all timeframes
 
     returns:
         series_df: pandas dataframe
             accessible table which contains data from all states in all times
     """
+    df = pd.DataFrame(series_dict)
+    return df
+
+
+data_frame_data = dict_to_df(dict_data["Results"]["series"][14]["data"])
 
 
 def df_to_csv(series_df):
@@ -183,3 +139,8 @@ def df_to_csv(series_df):
     returns:
         none (creates a csv file)
     """
+    with open("data.csv", "wb") as csv_file:
+        series_df.to_csv(csv_file)
+
+
+df_to_csv(data_frame_data)
