@@ -1,8 +1,6 @@
-import requests
 from csv import reader as csv_reader
-
-# from csv import DictReader
 from keys import BLS_key
+import requests
 import json
 import pandas as pd
 
@@ -10,7 +8,7 @@ import pandas as pd
 # dictionaries to make the data acquisition more understandable
 def make_state_dict(state_dict_url):
     """
-    creates a dictionary from a url
+    creates a dictionary from a url with state id info
 
     inputs:
         state_dict_url: str
@@ -20,8 +18,16 @@ def make_state_dict(state_dict_url):
         state_dict: dict
             dictionary that maps states to their 2 digit numbers
     """
+
+    # string w states separated from their ids with \t, each separated with \n
     states_string = ((requests.get(state_dict_url)).content).decode()
-    state_id_list = [string.strip("\r") for string in (states_string.split("\n")[1:])]
+
+    # list of each <state id> + "\t" + <state name>
+    state_id_list = []
+    for string in states_string.split("\n")[1:]:
+        state_id_list.append(string.strip("\r"))
+
+    # dict with state names mapping to state ids
     state_id_dict = {}
     for item in state_id_list:
         if item.count("\t") == 1:
@@ -47,10 +53,14 @@ def create_all_state_ids(state_idx_dict, sample_series_id):
             names of states mapped to series IDs within the same series type
             as sample_series_id
     """
+
+    # finds index of first int in the string of chars & ints
     for idx, character in enumerate(sample_series_id):
         if character.isdigit():
             state_int_index = int(idx)
             break
+
+    # creates dict with state names mappig to series id with proper state id
     series_ids_dict = {}
     for key in state_dict:
         this_state_series = (
@@ -84,10 +94,12 @@ def get_series_json(series_ids_dict, start_year, end_year, api_key):
             data values for all timeframes and series called
     """
 
-    active_series_list = []
+    # creates list of state names from states.csv file
     with open("states.csv", "r") as states_file:
         state_strings_list = list(csv_reader(states_file, delimiter=","))[0]
 
+    # creates list of series ids only for states in state_strings_list
+    active_series_list = []
     for state_string in state_strings_list:
         active_series_list.append(series_ids_dict[state_string])
 
@@ -100,9 +112,13 @@ def get_series_json(series_ids_dict, start_year, end_year, api_key):
             "registrationkey": api_key,
         }
     )
+
+    # API CALL: MAX 200 PER DAY
     json_data = requests.post(
         "https://api.bls.gov/publicAPI/v2/timeseries/data/", data=data, headers=headers
     )
+
+    # converts json object to dict and returns
     return json_data.json()
 
 
