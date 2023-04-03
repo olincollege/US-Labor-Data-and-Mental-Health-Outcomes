@@ -122,10 +122,9 @@ def get_series_json(series_ids_dict, start_year, end_year, api_key):
 
 
 state_fatalities_json = get_series_json(series_ids_dict, 2011, 2020, BLS_key)
-# print(state_fatalities_json)
 
 
-def dict_to_df(series_data_dict):
+def dict_to_df(series_ids_dict, series_data_dict):
     """
     creates a df object from series_dict with each state as a column of values
 
@@ -137,10 +136,29 @@ def dict_to_df(series_data_dict):
         series_df: pandas dataframe
             accessible table which contains data from all states in all times
     """
-    df = pd.DataFrame(series_data_dict["Results"]["series"])
-    return df
+    series_to_state = {state:series for series, state in series_ids_dict.items()}
+    print(series_to_state)
+    # create a list to store state dataframes in
+    state_df_list = []
 
-fatal_panda = dict_to_df(state_fatalities_json)
+    # create a single dataframe for each of the states that return data
+    for series_id in series_data_dict["Results"]["series"]:
+        state_name = series_to_state[series_id["seriesID"]]
+        df = pd.DataFrame(columns = ['year' , state_name])
+        for item in series_id["data"]:
+            year = item['year']
+            fatalities = item['value']
+            df = df.append({'year':year, state_name:fatalities}, ignore_index=True)
+        state_df_list.append(df)
+
+    # merge the state dataframes to create one frame merged over year column
+    
+    for idx, dataframes in enumerate state_df_list:
+        pass # TODO: merge the dataframes using dataframe.merge or .join in loop
+    # create pivoted dataframe that includes all 
+    return all_states_df
+
+fatal_panda = dict_to_df(series_ids_dict, state_fatalities_json)
 
 def df_to_csv(series_df):
     """
