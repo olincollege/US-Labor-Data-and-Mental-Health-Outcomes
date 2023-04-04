@@ -2,7 +2,7 @@
     Convert data from an API call to a readable CSV with states, years, & data
 """
 from init_state_dicts import make_state_dict, create_all_state_ids
-from call_API import get_series_json
+from call_api import get_series_json
 from keys import BLS_key
 from conversions import dict_to_df, df_to_csv
 

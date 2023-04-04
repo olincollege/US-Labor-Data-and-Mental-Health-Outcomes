@@ -47,7 +47,7 @@ def create_all_state_ids(state_dict, sample_series_id, state_location_in_series_
     """
 
     # creates list of state names from states.csv file
-    with open("states.csv", "r") as states_file:
+    with open("states.csv", "r", encoding="UTF-8") as states_file:
         state_strings_list = list(csv_reader(states_file, delimiter=","))[0]
 
     # creates dict with state names mappig to series id with proper state id

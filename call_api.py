@@ -2,8 +2,8 @@
     Includes any functions that make an API call
     MAX 200 CALLS PER DAY
 """
-import requests
 import json
+import requests
 
 
 def get_series_json(series_ids_dict, start_year, end_year, api_key):
