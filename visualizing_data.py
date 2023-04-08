@@ -47,6 +47,10 @@ def plot_beyond_change_threshold_data(data, change_ratio, plot_row, plot_col, pl
     Args:
         data: dataframe with data to plot
         change_ratio: float which is the floor or ceiling for comparison
+        plot_row: int num rows in subplot
+        plot_col: int num cols in subplot
+        plot_num: int which plot
+
     """
     plt.subplot(plot_row, plot_col, plot_num)
 
