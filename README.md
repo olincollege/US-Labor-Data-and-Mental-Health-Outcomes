@@ -1,6 +1,10 @@
 # US-Labor-Data-and-Mental-Health-Outcomes
 
-## Introduction
+## Authors
+
+Mira Chew, Rajiv Perera
+
+## Description
 Using Federally collected data from the Bureau of Labor Statistics (BLS) to examine trends of workplace deaths in different states across the USA.
 
 This project pulls data from an API provided by the BLS website. From the json formatted data, we convert it into a dictionary, then to a data frame, and finally to a csv file called data.csv. From this file, we visualize it using the visualizing_data.py file. Visualizing can also be done by running the code cells in the computational essay Jupyter notebook.
