@@ -35,7 +35,14 @@ def plot_all_data(data):
         single_state_data = [int(value) for value in data.iloc[i][1:]]
         plt.plot(years, single_state_data, label=data.iloc[i][0])
 
-    plt.legend()
+    plt.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.05),
+        fancybox=True,
+        shadow=True,
+        ncol=5,
+    )
+
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
     plt.title("Fatalities Per Year in Each State")
