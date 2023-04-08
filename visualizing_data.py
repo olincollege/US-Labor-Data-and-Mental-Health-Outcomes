@@ -39,13 +39,10 @@ def plot_all_data(data):
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
     plt.title("Fatalities Per Year in Each State")
-    plt.show()
 
 
 def plot_beyond_change_threshold_data(data, change_ratio):
     """
-
-
     Args:
         data: dataframe with data to plot
         change_ratio: float which is the floor or ceiling for comparison
@@ -68,9 +65,10 @@ def plot_beyond_change_threshold_data(data, change_ratio):
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
     plt.title(
+        
         f"Deaths in States which {comparison} Fatalities by a factor of {change_ratio}"
+    
     )
-    plt.show()
 
 
 def plot_mean_data(data, plot_row, plot_col, plot_num):
