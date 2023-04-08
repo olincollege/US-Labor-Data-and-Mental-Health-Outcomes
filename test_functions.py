@@ -34,7 +34,7 @@ test_data = {
 }
 test_state_ids_dict = {"State_1": "1", "State_2": "2"}
 data_frame = dict_to_df(test_state_ids_dict, test_data, 2018, 2020)
-df_to_csv(data_frame)
+df_to_csv(data_frame, "test_data")
 
 
 def test_state_dict_is_dict():
