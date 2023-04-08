@@ -37,7 +37,7 @@ def plot_all_data(data):
 
     plt.legend(
         loc="upper center",
-        bbox_to_anchor=(0.5, -0.05),
+        bbox_to_anchor=(0.5, -0.1),
         fancybox=True,
         shadow=True,
         ncol=5,
