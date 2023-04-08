@@ -39,14 +39,16 @@ def plot_all_data(data):
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
     plt.title("Fatalities Per Year in Each State")
+    plt.show()
 
 
-def plot_beyond_change_threshold_data(data, change_ratio):
+def plot_beyond_change_threshold_data(data, change_ratio, plot_row, plot_col, plot_num):
     """
     Args:
         data: dataframe with data to plot
         change_ratio: float which is the floor or ceiling for comparison
     """
+    plt.subplot(plot_row, plot_col, plot_num)
 
     years = [int(year) for year in data if year != "State"]
 
@@ -65,9 +67,7 @@ def plot_beyond_change_threshold_data(data, change_ratio):
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
     plt.title(
-        
         f"Deaths in States which {comparison} Fatalities by a factor of {change_ratio}"
-    
     )
 
 
@@ -81,11 +81,12 @@ def plot_mean_data(data, plot_row, plot_col, plot_num):
         plot_col: int num cols in subplot
         plot_num: int which plot
     """
+    plt.subplot(plot_row, plot_col, plot_num)
+
     years = [int(year) for year in data if year != "State"]
 
     mean_data = [mean(data[str(year)]) for year in years]
 
-    plt.subplot(plot_row, plot_col, plot_num)
     plt.plot(years, mean_data)
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
@@ -102,12 +103,13 @@ def plot_extremes(data, plot_row, plot_col, plot_num):
         plot_col: int num cols in subplot
         plot_num: int which plot
     """
+    plt.subplot(plot_row, plot_col, plot_num)
+
     years = [int(year) for year in data if year != "State"]
 
     max_data = [max(data[str(year)]) for year in years]
     min_data = [min(data[str(year)]) for year in years]
 
-    plt.subplot(plot_row, plot_col, plot_num)
     plt.plot(years, max_data, label="max")
     plt.plot(years, min_data, label="min")
     plt.legend()
@@ -127,6 +129,7 @@ def plot_state(data, state_name, plot_row, plot_col, plot_num):
         plot_col: int num cols in subplot
         plot_num: int which plot
     """
+    plt.subplot(plot_row, plot_col, plot_num)
 
     years = [int(year) for year in data if year != "State"]
 
@@ -135,7 +138,6 @@ def plot_state(data, state_name, plot_row, plot_col, plot_num):
             state_data = row[1][1:]
             break
 
-    plt.subplot(plot_row, plot_col, plot_num)
     plt.plot(years, state_data)
     plt.xlabel("Year")
     plt.ylabel("Number of Fatalities")
@@ -144,11 +146,11 @@ def plot_state(data, state_name, plot_row, plot_col, plot_num):
 
 csv_data = load_data("data.csv")
 
-subplot_rows, subplot_cols = 1, 3
+subplot_rows, subplot_cols = 2, 2
 plot_all_data(csv_data)
-plot_beyond_change_threshold_data(csv_data, 0.65)
-plot_beyond_change_threshold_data(csv_data, 1.25)
-plot_mean_data(csv_data, subplot_rows, subplot_cols, 1)
-plot_extremes(csv_data, subplot_rows, subplot_cols, 2)
-plot_state(csv_data, "Massachusetts", subplot_rows, subplot_cols, 3)
+plot_beyond_change_threshold_data(csv_data, 0.65, subplot_rows, subplot_cols, 1)
+plot_beyond_change_threshold_data(csv_data, 1.25, subplot_rows, subplot_cols, 2)
+plot_mean_data(csv_data, subplot_rows, subplot_cols, 3)
+# plot_extremes(csv_data, subplot_rows, subplot_cols, 5)
+plot_state(csv_data, "Massachusetts", subplot_rows, subplot_cols, 4)
 plt.show()
