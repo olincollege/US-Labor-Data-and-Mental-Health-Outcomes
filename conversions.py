@@ -54,5 +54,5 @@ def df_to_csv(series_df):
     returns:
         none (creates a csv file)
     """
-    with open("data.csv", "wb") as csv_file:
+    with open("test_data.csv", "wb") as csv_file:
         series_df.to_csv(csv_file)

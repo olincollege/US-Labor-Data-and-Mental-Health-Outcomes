@@ -21,6 +21,7 @@ def make_state_dict(state_dict_url):
     # string w states separated from their ids with \t, each separated with \n
     states_string = (requests.get(state_dict_url)).content.decode()
 
+
     # dict mapping "state name": 3 character state ID
     state_id_dict = {}
     for string in states_string.split("\r\n")[1:-1]:
